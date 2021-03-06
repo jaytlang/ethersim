@@ -18,11 +18,29 @@ func JoinSession(c *common.Conf) {
 		log.Fatalf("Fatal error establishing connection: %s", err.Error())
 	}
 
-	go doOutput(&con)
-	doInput(&con)
+	inC := make(chan bool)
+	outC := make(chan bool)
+
+	go doOutput(&con, outC)
+	go doInput(&con, inC)
+
+	first, last := true, true
+	for n := range merge(inC, outC) {
+		if first {
+			first = false
+			last = n
+			continue
+		}
+
+		if n == last == true {
+			fmt.Println("\n**************\nCollision\n*****************\n")
+		}
+		last = n
+	}
+
 }
 
-func doOutput(c *net.Conn) {
+func doOutput(c *net.Conn, s chan<- bool) {
 	b := make([]byte, 4)
 	isReceiving := false
 
@@ -41,10 +59,12 @@ func doOutput(c *net.Conn) {
 		if !isReceiving {
 			fmt.Print("Receiving: ")
 			isReceiving = true
+			s <- true
 		}
 
 		if r == '✓' {
 			isReceiving = false
+			s <- false
 		} else {
 			fmt.Printf("%c", r)
 		}
@@ -52,7 +72,7 @@ func doOutput(c *net.Conn) {
 	}
 }
 
-func doInput(c *net.Conn) {
+func doInput(c *net.Conn, s chan<- bool) {
 	for {
 		str := readMsgChars()
 		if str == "\n" {
@@ -61,6 +81,7 @@ func doInput(c *net.Conn) {
 
 		fmt.Print("Sending... ")
 		b := make([]byte, 4)
+		s <- true
 
 		for _, r := range str {
 			fmt.Printf("%c", r)
@@ -76,6 +97,7 @@ func doInput(c *net.Conn) {
 
 		utf8.EncodeRune(b, '✓')
 		_, err := (*c).Write(b)
+		s <- false
 		if err != nil {
 			(*c).Close()
 			return

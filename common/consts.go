@@ -1,6 +1,6 @@
 package common
 
-// IDs for RNG
+// ID RNG
 const defMinID int = 1000000000
 const defMaxID int = 9999999999
 
