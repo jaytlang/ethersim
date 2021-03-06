@@ -16,6 +16,7 @@ run: $(TARGET)
 .PHONY: clean format
 clean:
 	rm -rf $(TARGET)
+	pkill $(TARGET)
 
 format:
 	gofmt $(FMTFLAGS) .

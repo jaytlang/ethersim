@@ -3,6 +3,7 @@ package main
 import (
 	"ethersim/common"
 	"ethersim/media"
+	"ethersim/tap"
 	"fmt"
 	"os"
 	"strings"
@@ -24,6 +25,6 @@ func main() {
 		media.ServeCon(&conf)
 
 	} else {
-		fmt.Println("Not serving")
+		tap.JoinSession(&conf)
 	}
 }

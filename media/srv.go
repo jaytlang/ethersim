@@ -92,5 +92,6 @@ func ServeCon(c *common.Conf) {
 		// Aggregate the new connection and spin
 		// an input for it
 		cc <- &con
+		go input(&con, dc)
 	}
 }
