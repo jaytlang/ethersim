@@ -7,6 +7,11 @@ import (
 	"unicode/utf8"
 )
 
+type traceData struct {
+	r   rune
+	con *net.Conn
+}
+
 // The following are input and broadcast
 // operations for our one-to-many setup here.
 // Basically, if one client we're connected to
@@ -17,7 +22,7 @@ import (
 // the l.l. locking things we teach...maybe looking
 // at this code isn't too instructive. However, for this
 // use case, CSP is REALLY REALLY nice.
-func input(con *net.Conn, c chan<- rune) {
+func input(con *net.Conn, c chan<- traceData) {
 	for {
 		// Receive a new message, probably
 		// in the form of a 4-byte rune
@@ -36,11 +41,11 @@ func input(con *net.Conn, c chan<- rune) {
 		}
 
 		// Send it along!
-		c <- r
+		c <- traceData{r: r, con: con}
 	}
 }
 
-func broadcast(dc <-chan rune, cc <-chan *net.Conn) {
+func broadcast(dc <-chan traceData, cc <-chan *net.Conn) {
 	cons := []*net.Conn{}
 
 	for {
@@ -52,11 +57,14 @@ func broadcast(dc <-chan rune, cc <-chan *net.Conn) {
 			cons = append(cons, newcon)
 
 		// If there's new data, send it along
-		case r := <-dc:
+		case td := <-dc:
 			bytes := make([]byte, 4)
-			utf8.EncodeRune(bytes, r)
+			utf8.EncodeRune(bytes, td.r)
 
 			for i, c := range cons {
+				if c == td.con {
+					continue
+				}
 				_, err := (*c).Write(bytes)
 				if err != nil {
 					(*c).Close()
@@ -76,7 +84,7 @@ func ServeCon(c *common.Conf) {
 		log.Fatalf("Fatal error starting ethersim server: %s", err.Error())
 	}
 
-	dc := make(chan rune)
+	dc := make(chan traceData)
 	cc := make(chan *net.Conn)
 
 	// Start the broadcaster

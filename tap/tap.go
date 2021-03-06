@@ -39,13 +39,12 @@ func doOutput(c *net.Conn) {
 		}
 
 		if !isReceiving {
-			isReceiving = true
 			fmt.Print("Receiving: ")
+			isReceiving = true
 		}
 
 		if r == '✓' {
 			isReceiving = false
-			fmt.Println()
 		} else {
 			fmt.Printf("%c", r)
 		}
@@ -56,8 +55,13 @@ func doOutput(c *net.Conn) {
 func doInput(c *net.Conn) {
 	for {
 		str := readMsgChars()
+		if str == "\n" {
+			continue
+		}
+
 		fmt.Print("Sending... ")
 		b := make([]byte, 4)
+
 		for _, r := range str {
 			fmt.Printf("%c", r)
 			utf8.EncodeRune(b, r)
