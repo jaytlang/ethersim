@@ -1,17 +1,29 @@
 package main
 
 import (
-	"ethersim/conf"
+	"ethersim/common"
 	"ethersim/media"
-	"log"
+	"fmt"
+	"os"
+	"strings"
 )
 
 func main() {
-	conf, err := conf.MkConfig()
+	conf, err := common.ArgParse(os.Args[1:])
 	if err != nil {
-		log.Fatal("Invalid arguments!")
+		fmt.Println("Usage: ethersim [OPTIONS]")
+		fmt.Println("\t-s: Start ethersim server / emulated media")
+		fmt.Println("\t-c [ID]: Connect to session [ID]")
+		return
 	}
 
-	nm := conf.MkName()
-	media.ServeCon(nm)
+	if conf.Serving {
+		sessionStart := strings.LastIndex(conf.Name, "/") + 1
+		sessionID := conf.Name[sessionStart:]
+		fmt.Printf("Good to go! Now run `ethersim %s`\n", sessionID)
+		media.ServeCon(&conf)
+
+	} else {
+		fmt.Println("Not serving")
+	}
 }

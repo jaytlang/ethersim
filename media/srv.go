@@ -1,6 +1,7 @@
 package media
 
 import (
+	"ethersim/common"
 	"log"
 	"net"
 	"unicode/utf8"
@@ -69,8 +70,8 @@ func broadcast(dc <-chan rune, cc <-chan *net.Conn) {
 // ServeCon randomly generates a new connection
 // identifier, and begins serving it. This continues
 // forever or so -- until the caller tells us to stop.
-func ServeCon(nm string) {
-	ln, err := net.Listen("unix", nm)
+func ServeCon(c *common.Conf) {
+	ln, err := net.Listen("unix", (*c).Name)
 	if err != nil {
 		log.Fatalf("Fatal error starting ethersim server: %s", err.Error())
 	}
