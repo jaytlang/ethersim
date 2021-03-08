@@ -17,16 +17,18 @@ func readMsgChars() string {
 	return text
 }
 
-func doOutput(c *net.Conn, s chan<- bool, wc chan int) {
+func doOutput(c *net.Conn, s chan<- bool, wc <-chan int) {
 	b := make([]byte, 4)
 	isReceiving := false
 
 	for {
 		if delay := tryExpBackoff(wc); delay > 0 {
 			// Eat all the datas, to be safe
-			tmpbuf := make([]byte, delay*10+1)
+			// Delay is in terms of seconds, and we send
+			// one message every 100 milliseconds, so this
+			// works out
+			tmpbuf := make([]byte, delay*10)
 			(*c).Read(tmpbuf)
-			isReceiving = false
 			continue
 		}
 
@@ -49,10 +51,6 @@ func doOutput(c *net.Conn, s chan<- bool, wc chan int) {
 
 		if r == '✓' {
 			isReceiving = false
-			s <- false
-		} else if r == '☠' {
-			isReceiving = false
-			s <- true
 			s <- false
 		} else {
 			fmt.Printf("%c", r)

@@ -3,9 +3,7 @@ package tap
 import (
 	"math"
 	"math/rand"
-	"net"
 	"time"
-	"unicode/utf8"
 )
 
 // Slightly modified for effect
@@ -25,12 +23,4 @@ func tryExpBackoff(wc <-chan int) int {
 	default:
 		return 0
 	}
-}
-
-// Jam the boi
-func jamEther(c *net.Conn) {
-	r := '☠'
-	b := make([]byte, 4)
-	utf8.EncodeRune(b, r)
-	(*c).Write(b)
 }

@@ -46,7 +46,6 @@ func JoinSession(c *common.Conf) {
 			inS <- interval
 
 			fmt.Println("\n****** CONFLICT! ******")
-			jamEther(&con)
 		} else {
 			ctr = 0
 		}
