@@ -45,7 +45,10 @@ func JoinSession(c *common.Conf) {
 			outS <- interval
 			inS <- interval
 
-			fmt.Println("\n****** CONFLICT! ******")
+			fmt.Println("\n****** A conflict occurred! ******")
+			fmt.Println("Someone tried to send and receive at the same time")
+			fmt.Println("Applying backoff with interval", interval)
+			fmt.Println("***********************************")
 		} else {
 			ctr = 0
 		}

@@ -13,9 +13,11 @@ $(TARGET):
 run: $(TARGET)
 	./$(TARGET)
 
-.PHONY: clean format
+.PHONY: clean format kill
 clean:
 	rm -rf $(TARGET)
+
+kill:
 	pkill $(TARGET)
 
 format:

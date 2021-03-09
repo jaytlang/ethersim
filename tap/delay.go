@@ -9,7 +9,7 @@ import (
 // Slightly modified for effect
 func mkInterval(ctr int) int {
 	rval := rand.Intn(ctr + 1)
-	return int(math.Pow(2, float64(rval)) - 1)
+	return int(math.Pow(2, float64(rval)))
 }
 
 // Given the con and the sleep channel, sleep
