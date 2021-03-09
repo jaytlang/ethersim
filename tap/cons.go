@@ -52,6 +52,10 @@ func doOutput(c *net.Conn, s chan<- bool, wc <-chan int) {
 		if r == '✓' {
 			isReceiving = false
 			s <- false
+		} else if r == '✖' {
+			isReceiving = false
+			s <- false
+			fmt.Printf("\n***Note: CRC32 checksum failed on this message!***")
 		} else {
 			fmt.Printf("%c", r)
 		}
@@ -72,6 +76,8 @@ func doInput(c *net.Conn, s chan<- bool, wc <-chan int) {
 				continue
 			}
 
+			willFail := false
+
 			fmt.Print("Sending... ")
 			b := make([]byte, 4)
 			s <- true
@@ -79,6 +85,11 @@ func doInput(c *net.Conn, s chan<- bool, wc <-chan int) {
 			for _, r := range str {
 				if i := tryExpBackoff(wc); i > 0 {
 					break
+				}
+
+				if r == '`' {
+					willFail = true
+					continue
 				}
 				fmt.Printf("%c", r)
 				utf8.EncodeRune(b, r)
@@ -91,7 +102,11 @@ func doInput(c *net.Conn, s chan<- bool, wc <-chan int) {
 				time.Sleep(time.Duration(common.MsgInterval) * time.Millisecond)
 			}
 
-			utf8.EncodeRune(b, '✓')
+			if willFail {
+				utf8.EncodeRune(b, '✖')
+			} else {
+				utf8.EncodeRune(b, '✓')
+			}
 			_, err := (*c).Write(b)
 			s <- false
 			if err != nil {

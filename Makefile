@@ -17,7 +17,7 @@ run: $(TARGET)
 clean:
 	rm -rf $(TARGET)
 
-kill:
+kill: clean
 	pkill $(TARGET)
 
 format:
