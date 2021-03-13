@@ -4,6 +4,7 @@ import (
 	"ethersim/common"
 	"log"
 	"net"
+	"os"
 	"unicode/utf8"
 )
 
@@ -82,6 +83,10 @@ func ServeCon(c *common.Conf) {
 	ln, err := net.Listen("unix", (*c).Name)
 	if err != nil {
 		log.Fatalf("Fatal error starting ethersim server: %s", err.Error())
+	}
+
+	if err := os.Chmod((*c).Name, 0777); err != nil {
+		log.Fatalf("Error setting permissions: %s\n", err.Error())
 	}
 
 	dc := make(chan traceData)
