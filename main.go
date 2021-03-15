@@ -21,7 +21,7 @@ func main() {
 	if conf.Serving {
 		sessionStart := strings.LastIndex(conf.Name, "/") + 1
 		sessionID := conf.Name[sessionStart:]
-		fmt.Printf("Good to go! Now run `ethersim -c %s`\n", sessionID)
+		fmt.Printf("Good to go! Your ether ID is %s.\n", sessionID)
 		media.ServeCon(&conf)
 
 	} else {
