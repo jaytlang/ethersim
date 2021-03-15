@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"ethersim/common"
 	"fmt"
+	"math/rand"
 	"net"
 	"os"
 	"time"
@@ -91,7 +92,11 @@ func doInput(c *net.Conn, s chan<- bool, wc <-chan int) {
 					willFail = true
 					continue
 				}
+
 				fmt.Printf("%c", r)
+				if willFail {
+					r += rune(rand.Intn(5)) - rune(rand.Intn(10))
+				}
 				utf8.EncodeRune(b, r)
 
 				_, err := (*c).Write(b)
