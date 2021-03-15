@@ -1,15 +1,12 @@
 package tap
 
 import (
-	"math"
-	"math/rand"
 	"time"
 )
 
-// Slightly modified for effect
+// Currently disabled, returns 2 always
 func mkInterval(ctr int) int {
-	rval := rand.Intn(ctr + 1)
-	return int(math.Pow(2, float64(rval)))
+	return 2
 }
 
 // Given the con and the sleep channel, sleep

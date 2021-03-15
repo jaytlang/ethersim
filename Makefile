@@ -7,7 +7,7 @@ TARGET = ethersim
 
 all: $(TARGET)
 
-$(TARGET):
+$(TARGET): format
 	go build $(GOFLAGS) -o $(TARGET)
 
 run: $(TARGET)
