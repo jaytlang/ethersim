@@ -45,12 +45,13 @@ func doOutput(c *net.Conn, s chan<- bool, wc <-chan int) {
 		}
 
 		if !isReceiving {
-			fmt.Print("Receiving: ")
+			fmt.Print("\nReceiving: ")
 			isReceiving = true
 			s <- true
 		}
 
 		if r == '✓' {
+			fmt.Print("Type your message here: ")
 			isReceiving = false
 			s <- false
 		} else if r == '✖' {
